@@ -27,7 +27,7 @@ async function loadSavedConfig() {
   if (config.dockerDirectory) {
     elements.fixDirectoryCheck.checked = true;
   }
-  elements.stopOnCloseCheck.checked = config.stopOnClose || false;
+  elements.stopOnCloseCheck.checked = true;
   
   // Auto-load directory if saved
   if (config.dockerDirectory) {
@@ -252,7 +252,7 @@ elements.clearBtn.addEventListener('click', () => {
 });
 
 // Initial message
-appendOutput('Docker Compose Manager initialized.');
+appendOutput('Services initialized.');
 appendOutput('Select a directory to get started.');
 
 // Load saved configuration

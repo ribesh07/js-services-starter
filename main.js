@@ -47,7 +47,7 @@ async function stopContainersOnClose() {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
-    height: 700,
+    height: 900,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -92,20 +92,24 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-app.on('window-all-closed', async () => {
-  await stopContainersOnClose();
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
 app.on('before-quit', async (event) => {
   if (config.stopOnClose && config.dockerDirectory) {
     event.preventDefault();
     await stopContainersOnClose();
-    app.exit(0);
+    
+    app.quit();
   }
 });
+
+app.on('window-all-closed', async () => {
+  // await stopContainersOnClose();
+  if (process.platform !== 'darwin') {
+    app.quit();
+
+  }
+  app.exit(0)
+});
+
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {

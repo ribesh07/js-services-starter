@@ -22,7 +22,7 @@
     "electron-builder": "^24.9.1"
   },
   "build": {
-    "appId": "com.dockermanager.app",
+    "appId": "com.j1soft.app",
     "productName": "J1soft Services Manager",
     "directories": {
       "output": "release"
