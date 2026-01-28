@@ -20,17 +20,40 @@ const elements = {
 };
 
 // Load saved config on startup
+// async function loadSavedConfig() {
+//   const config = await window.electronAPI.getConfig();
+  
+//   // Update checkboxes
+//   if (config.dockerDirectory) {
+//     elements.fixDirectoryCheck.checked = true;
+//   }
+//   elements.stopOnCloseCheck.checked = true;
+  
+//   // Auto-load directory if saved
+//   if (config.dockerDirectory) {
+//     currentDirectory = config.dockerDirectory;
+//     elements.currentPath.textContent = currentDirectory;
+//     elements.controls.style.display = 'grid';
+//     appendOutput(`Auto-loaded directory: ${currentDirectory}`, 'success');
+//     await loadServices();
+//     checkStatus();
+//   }
+// }
+
 async function loadSavedConfig() {
   const config = await window.electronAPI.getConfig();
-  
-  // Update checkboxes
+
+  // Always enforce stop-on-close
+  elements.stopOnCloseCheck.checked = true;
+  elements.stopOnCloseCheck.disabled = true;
+
+  await window.electronAPI.saveConfig({
+    dockerDirectory: config.dockerDirectory ?? null,
+    stopOnClose: true
+  });
+
   if (config.dockerDirectory) {
     elements.fixDirectoryCheck.checked = true;
-  }
-  elements.stopOnCloseCheck.checked = true;
-  
-  // Auto-load directory if saved
-  if (config.dockerDirectory) {
     currentDirectory = config.dockerDirectory;
     elements.currentPath.textContent = currentDirectory;
     elements.controls.style.display = 'grid';
@@ -39,6 +62,7 @@ async function loadSavedConfig() {
     checkStatus();
   }
 }
+
 
 // Save settings when checkboxes change
 elements.fixDirectoryCheck.addEventListener('change', async () => {
@@ -55,19 +79,19 @@ elements.fixDirectoryCheck.addEventListener('change', async () => {
   }
 });
 
-elements.stopOnCloseCheck.addEventListener('change', async () => {
-  const config = {
-    dockerDirectory: elements.fixDirectoryCheck.checked ? currentDirectory : null,
-    stopOnClose: elements.stopOnCloseCheck.checked
-  };
-  await window.electronAPI.saveConfig(config);
+// elements.stopOnCloseCheck.addEventListener('change', async () => {
+//   const config = {
+//     dockerDirectory: elements.fixDirectoryCheck.checked ? currentDirectory : null,
+//     stopOnClose: elements.stopOnCloseCheck.checked
+//   };
+//   await window.electronAPI.saveConfig(config);
   
-  if (elements.stopOnCloseCheck.checked) {
-    appendOutput('✓ Containers will stop when app closes', 'success');
-  } else {
-    appendOutput('✓ Containers will keep running when app closes', 'info');
-  }
-});
+//   if (elements.stopOnCloseCheck.checked) {
+//     appendOutput('✓ Containers will stop when app closes', 'success');
+//   } else {
+//     appendOutput('✓ Containers will keep running when app closes', 'info');
+//   }
+// });
 
 function appendOutput(message, type = 'info') {
   const timestamp = new Date().toLocaleTimeString();

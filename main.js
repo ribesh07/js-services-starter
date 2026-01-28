@@ -93,7 +93,7 @@ app.whenReady().then(() => {
 });
 
 app.on('before-quit', async (event) => {
-  if (config.stopOnClose && config.dockerDirectory) {
+  if ( config.dockerDirectory) {
     event.preventDefault();
     await stopContainersOnClose();
     
