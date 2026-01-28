@@ -1,0 +1,49 @@
+{
+  "name": "j1soft-services-launcher",
+  "version": "1.0.3",
+  "description": "Desktop app to manage j1soft services",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "docker",
+    "docker-compose",
+    "electron"
+  ],
+  "author": "J1soft Pvt. Ltd.",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.dockermanager.app",
+    "productName": "J1soft Services Manager",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "**/*",
+      "!**/*.md",
+      "!release/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Utility"
+    }
+  }
+}

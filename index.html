@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker Compose Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 850px;
+      margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .directory-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      border: 2px solid #e1e8ed;
+    }
+
+    .settings-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      border: 2px solid #e1e8ed;
+    }
+
+    .settings-section h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .setting-item {
+      margin-bottom: 12px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #555;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox-label span {
+      line-height: 1.5;
+    }
+
+    .directory-path {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .path-display {
+      flex: 1;
+      padding: 10px 15px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #555;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-success {
+      background: #48bb78;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #f56565;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #ed8936;
+      color: white;
+    }
+
+    .btn-info {
+      background: #4299e1;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #718096;
+      color: white;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .status-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .status-header h2 {
+      color: #333;
+      font-size: 18px;
+    }
+
+    .output-box {
+      flex: 1;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.5;
+      border: 2px solid #333;
+    }
+
+    .output-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .output-box::-webkit-scrollbar-track {
+      background: #2d2d2d;
+    }
+
+    .output-box::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+
+    .output-box::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .service-selector {
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      border: 2px solid #e1e8ed;
+    }
+
+    .service-selector label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .service-selector select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .success-msg {
+      color: #48bb78;
+    }
+
+    .error-msg {
+      color: #f56565;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐳 Docker Compose Manager</h1>
+    <p class="subtitle">Manage your Docker containers with ease</p>
+
+    <div class="directory-section">
+      <div class="directory-path">
+        <div class="path-display" id="currentPath">No directory selected</div>
+        <button class="btn-primary" id="selectDirBtn">Browse...</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>⚙️ Settings</h3>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="fixDirectoryCheck">
+          <span>Remember directory (auto-load on startup)</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="stopOnCloseCheck">
+          <span>Stop containers when app closes</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="service-selector" id="serviceSelector" style="display: none;">
+      <label for="serviceSelect">Filter logs by service (optional):</label>
+      <select id="serviceSelect">
+        <option value="">All Services</option>
+      </select>
+    </div>
+
+    <div class="controls" id="controls" style="display: none;">
+      <button class="btn-success" id="upBtn">▶ Start</button>
+      <button class="btn-danger" id="downBtn">⬛ Stop</button>
+      <button class="btn-warning" id="restartBtn">🔄 Restart</button>
+      <button class="btn-info" id="pullBtn">⬇ Pull Updates</button>
+      <button class="btn-secondary" id="statusBtn">📊 Status</button>
+      <button class="btn-primary" id="logsBtn">📋 View Logs</button>
+    </div>
+
+    <div class="status-section">
+      <div class="status-header">
+        <h2>Output</h2>
+        <button class="btn-secondary" id="clearBtn" style="padding: 6px 12px; font-size: 12px;">Clear</button>
+      </div>
+      <div class="output-box" id="output">Ready. Select a directory containing docker-compose.yml to begin.</div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

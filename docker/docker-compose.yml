@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db_js
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      TZ: UTC
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "7911:5432"
+
+  backend:
+    image: guru874/nest-backend:latest
+    container_name: nest_backend
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - .env.development
+    volumes:
+      - backend_uploads:/app/uploads
+    ports:
+      - "3088:3088"
+
+  frontend:
+    image: guru874/next-frontend:latest
+    container_name: next_frontend
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - .env.frontend
+    ports:
+      - "3033:3033"
+
+volumes:
+  postgres_data:
+  backend_uploads:

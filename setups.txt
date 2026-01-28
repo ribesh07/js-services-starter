@@ -1,0 +1,7 @@
+# Build for your current platform
+npm run build
+
+# Or build for specific platforms
+npm run build:win   # Windows installer
+npm run build:mac   # macOS DMG
+npm run build:linux # Linux AppImage
