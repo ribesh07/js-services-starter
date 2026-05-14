@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Docker Logs - Live</title>
+
   <style>
     * {
       margin: 0;
@@ -11,47 +12,71 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #1e1e1e;
+      --panel: #2d2d2d;
+      --border: #444;
+      --text: #d4d4d4;
+      --muted: #aaa;
+      --error: #f56565;
+      --warn: #ed8936;
+      --info: #4299e1;
+      --success: #48bb78;
+    }
+
+    html,
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #1e1e1e;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-width: 900px; /* desktop only */
+      min-height: 600px;
       overflow: hidden;
     }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
     .header {
-      background: #2d2d2d;
-      padding: 15px 20px;
-      border-bottom: 2px solid #444;
+      background: var(--panel);
+      border-bottom: 2px solid var(--border);
+      padding: clamp(12px, 1vw, 20px) clamp(16px, 1.5vw, 28px);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
     }
 
     .header h1 {
-      color: #fff;
-      font-size: 18px;
+      color: white;
+      font-size: clamp(16px, 1vw, 24px);
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .controls {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     button {
-      padding: 8px 16px;
+      padding: clamp(8px, 0.8vw, 12px) clamp(14px, 1vw, 20px);
       border: none;
-      border-radius: 4px;
-      font-size: 13px;
+      border-radius: 6px;
+      font-size: clamp(12px, 0.75vw, 14px);
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
     .btn-clear {
-      background: #ed8936;
+      background: var(--warn);
       color: white;
     }
 
@@ -60,7 +85,7 @@
     }
 
     .btn-close {
-      background: #f56565;
+      background: var(--error);
       color: white;
     }
 
@@ -70,15 +95,16 @@
 
     .log-container {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
-      padding: 15px;
-      background: #1e1e1e;
-      color: #d4d4d4;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
+      padding: clamp(14px, 1vw, 24px);
+      background: var(--bg);
+      color: var(--text);
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: clamp(12px, 0.75vw, 15px);
       line-height: 1.6;
       white-space: pre-wrap;
-      word-wrap: break-word;
+      word-break: break-word;
     }
 
     .log-container::-webkit-scrollbar {
@@ -86,12 +112,12 @@
     }
 
     .log-container::-webkit-scrollbar-track {
-      background: #2d2d2d;
+      background: var(--panel);
     }
 
     .log-container::-webkit-scrollbar-thumb {
       background: #555;
-      border-radius: 5px;
+      border-radius: 8px;
     }
 
     .log-container::-webkit-scrollbar-thumb:hover {
@@ -99,45 +125,47 @@
     }
 
     .log-line {
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
     .log-error {
-      color: #f56565;
+      color: var(--error);
     }
 
     .log-warning {
-      color: #ed8936;
+      color: var(--warn);
     }
 
     .log-info {
-      color: #4299e1;
+      color: var(--info);
     }
 
     .log-success {
-      color: #48bb78;
+      color: var(--success);
     }
 
     .status-bar {
-      background: #2d2d2d;
-      padding: 10px 20px;
-      border-top: 2px solid #444;
-      color: #aaa;
-      font-size: 12px;
+      background: var(--panel);
+      border-top: 2px solid var(--border);
+      padding: clamp(10px, 0.8vw, 16px) clamp(16px, 1.5vw, 28px);
+      color: var(--muted);
+      font-size: clamp(11px, 0.7vw, 14px);
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     .status-indicator {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       margin-right: 8px;
     }
 
     .status-active {
-      background: #48bb78;
+      background: var(--success);
       animation: pulse 2s ease-in-out infinite;
     }
 
@@ -146,14 +174,46 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.45;
+      }
+    }
+
+    /* Small desktop / laptop */
+    @media (max-width: 1200px) {
+      .header h1 {
+        font-size: 16px;
+      }
+
+      button {
+        padding: 8px 14px;
+      }
+
+      .log-container {
+        font-size: 12px;
+      }
+    }
+
+    /* Large desktop / 2K / ultrawide */
+    @media (min-width: 2000px) {
+      .log-container {
+        max-width: 100%;
+        font-size: 16px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>📋 Docker Logs - Live View</h1>
+
     <div class="controls">
       <button class="btn-clear" id="clearBtn">Clear Logs</button>
       <button class="btn-close" id="closeBtn">Close</button>
@@ -183,12 +243,12 @@
 
     function appendLog(text) {
       const lines = text.split('\n');
+
       lines.forEach(line => {
         if (line.trim()) {
           const div = document.createElement('div');
           div.className = 'log-line';
-          
-          // Simple colorization based on content
+
           if (line.toLowerCase().includes('error')) {
             div.classList.add('log-error');
           } else if (line.toLowerCase().includes('warn')) {
@@ -198,19 +258,17 @@
           } else if (line.toLowerCase().includes('success')) {
             div.classList.add('log-success');
           }
-          
+
           div.textContent = line;
           logContainer.appendChild(div);
           lineCount++;
         }
       });
-      
-      // Auto-scroll to bottom
+
       logContainer.scrollTop = logContainer.scrollHeight;
       lineCountEl.textContent = `Lines: ${lineCount}`;
     }
 
-    // Listen for log data from main process
     window.electronAPI.onLogData((data) => {
       appendLog(data);
     });
@@ -219,7 +277,7 @@
       statusIndicator.classList.remove('status-active');
       statusIndicator.classList.add('status-inactive');
       statusText.textContent = `Stream ended (exit code: ${code})`;
-      appendLog(`\n--- Log stream ended ---\n`);
+      appendLog('\n--- Log stream ended ---\n');
     });
 
     clearBtn.addEventListener('click', () => {

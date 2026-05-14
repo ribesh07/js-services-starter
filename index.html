@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>J1soft Service Manager</title>
+
   <style>
     * {
       margin: 0;
@@ -11,58 +12,94 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary: #667eea;
+      --success: #48bb78;
+      --danger: #f56565;
+      --warning: #ed8936;
+      --info: #4299e1;
+      --secondary: #718096;
+      --panel: #f7f9fc;
+      --border: #e1e8ed;
+    }
+
+    html,
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      height: 100vh;
-      padding: 20px;
+      width: 100%;
+      height: 100%;
+      min-width: 1000px;
+      min-height: 700px;
       overflow: hidden;
     }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: clamp(16px, 1.5vw, 32px);
+    }
+
     .container {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 850px;
+      width: 100%;
+      height: 100%;
+      max-width: 1800px;
       margin: 0 auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      height: calc(100vh - 40px);
+      background: white;
+      border-radius: 18px;
+      padding: clamp(22px, 2vw, 40px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
 
     h1 {
       color: #333;
-      margin-bottom: 10px;
-      font-size: 28px;
+      font-size: clamp(24px, 1.8vw, 40px);
+      margin-bottom: 8px;
     }
 
     .subtitle {
       color: #666;
-      margin-bottom: 25px;
-      font-size: 14px;
+      font-size: clamp(13px, 0.9vw, 18px);
+      margin-bottom: clamp(18px, 1.5vw, 28px);
     }
 
-    .directory-section {
-      margin-bottom: 25px;
-      padding: 20px;
-      background: #f7f9fc;
-      border-radius: 8px;
-      border: 2px solid #e1e8ed;
-    }
-
-    .settings-section {
-      margin-bottom: 25px;
-      padding: 20px;
-      background: #f7f9fc;
-      border-radius: 8px;
-      border: 2px solid #e1e8ed;
+    .directory-section,
+    .settings-section,
+    .service-selector {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: clamp(16px, 1.2vw, 24px);
+      margin-bottom: clamp(14px, 1vw, 22px);
     }
 
     .settings-section h3 {
       color: #333;
-      margin-bottom: 15px;
-      font-size: 16px;
+      font-size: clamp(15px, 1vw, 20px);
+      margin-bottom: 14px;
+    }
+
+    .directory-path {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .path-display {
+      flex: 1;
+      min-width: 0;
+      padding: clamp(10px, 0.9vw, 16px);
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: clamp(12px, 0.8vw, 15px);
+      color: #555;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .setting-item {
@@ -72,59 +109,51 @@
     .checkbox-label {
       display: flex;
       align-items: center;
+      gap: 10px;
       cursor: pointer;
+      font-size: clamp(13px, 0.85vw, 16px);
       color: #555;
-      font-size: 14px;
-      user-select: none;
     }
 
     .checkbox-label input[type="checkbox"] {
       width: 18px;
       height: 18px;
-      margin-right: 10px;
-      cursor: pointer;
+      flex-shrink: 0;
     }
 
-    .checkbox-label span {
-      line-height: 1.5;
+    .service-selector label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: clamp(13px, 0.9vw, 16px);
+      font-weight: 600;
+      color: #333;
     }
 
-    .directory-path {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .path-display {
-      flex: 1;
-      padding: 10px 15px;
-      background: white;
+    .service-selector select {
+      width: 100%;
+      padding: clamp(10px, 0.9vw, 14px);
       border: 1px solid #ddd;
-      border-radius: 6px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      color: #555;
+      border-radius: 8px;
+      font-size: clamp(13px, 0.85vw, 15px);
+      background: white;
     }
 
     button {
-      padding: 10px 20px;
       border: none;
-      border-radius: 6px;
-      font-size: 14px;
+      border-radius: 8px;
+      padding: clamp(10px, 0.8vw, 14px) clamp(16px, 1vw, 24px);
+      font-size: clamp(12px, 0.8vw, 14px);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: 0.2s ease;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
     }
 
     button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    button:active {
-      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
 
     button:disabled {
@@ -133,41 +162,18 @@
       transform: none;
     }
 
-    .btn-primary {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-success {
-      background: #48bb78;
-      color: white;
-    }
-
-    .btn-danger {
-      background: #f56565;
-      color: white;
-    }
-
-    .btn-warning {
-      background: #ed8936;
-      color: white;
-    }
-
-    .btn-info {
-      background: #4299e1;
-      color: white;
-    }
-
-    .btn-secondary {
-      background: #718096;
-      color: white;
-    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-info { background: var(--info); color: white; }
+    .btn-secondary { background: var(--secondary); color: white; }
 
     .controls {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
     }
 
     .status-section {
@@ -181,31 +187,33 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
+      gap: 12px;
     }
 
     .status-header h2 {
+      font-size: clamp(18px, 1.2vw, 28px);
       color: #333;
-      font-size: 18px;
     }
 
     .output-box {
       flex: 1;
+      min-height: 0;
       background: #1e1e1e;
       color: #d4d4d4;
-      padding: 15px;
-      border-radius: 6px;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
+      padding: clamp(14px, 1vw, 22px);
+      border-radius: 10px;
+      border: 2px solid #333;
+      font-family: Consolas, monospace;
+      font-size: clamp(12px, 0.8vw, 15px);
+      line-height: 1.6;
       overflow-y: auto;
       white-space: pre-wrap;
-      word-wrap: break-word;
-      line-height: 1.5;
-      border: 2px solid #333;
+      word-break: break-word;
     }
 
     .output-box::-webkit-scrollbar {
-      width: 8px;
+      width: 10px;
     }
 
     .output-box::-webkit-scrollbar-track {
@@ -214,11 +222,7 @@
 
     .output-box::-webkit-scrollbar-thumb {
       background: #555;
-      border-radius: 4px;
-    }
-
-    .output-box::-webkit-scrollbar-thumb:hover {
-      background: #666;
+      border-radius: 6px;
     }
 
     .loading {
@@ -226,49 +230,41 @@
       width: 14px;
       height: 14px;
       border: 2px solid #f3f3f3;
-      border-top: 2px solid #667eea;
+      border-top: 2px solid var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-left: 8px;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .service-selector {
-      margin-bottom: 15px;
-      padding: 15px;
-      background: #f7f9fc;
-      border-radius: 8px;
-      border: 2px solid #e1e8ed;
+    /* Smaller desktop */
+    @media (max-width: 1280px) {
+      .controls {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      h1 {
+        font-size: 24px;
+      }
     }
 
-    .service-selector label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 600;
-      font-size: 14px;
-    }
+    /* Large desktop / ultrawide */
+    @media (min-width: 2200px) {
+      .container {
+        max-width: 2200px;
+      }
 
-    .service-selector select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      background: white;
-      cursor: pointer;
-    }
+      .controls {
+        grid-template-columns: repeat(6, 1fr);
+      }
 
-    .success-msg {
-      color: #48bb78;
-    }
-
-    .error-msg {
-      color: #f56565;
+      .output-box {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -286,12 +282,14 @@
 
     <div class="settings-section">
       <h3>⚙️ Settings</h3>
+
       <div class="setting-item">
         <label class="checkbox-label">
           <input type="checkbox" id="fixDirectoryCheck">
           <span>Remember directory (auto-load on startup)</span>
         </label>
       </div>
+
       <div class="setting-item">
         <label class="checkbox-label">
           <input type="checkbox" id="stopOnCloseCheck">
@@ -300,14 +298,14 @@
       </div>
     </div>
 
-    <div class="service-selector" id="serviceSelector" style="display: none;">
+    <div class="service-selector" id="serviceSelector" style="display:none;">
       <label for="serviceSelect">Filter logs by service (optional):</label>
       <select id="serviceSelect">
         <option value="">All Services</option>
       </select>
     </div>
 
-    <div class="controls" id="controls" style="display: none;">
+    <div class="controls" id="controls" style="display:none;">
       <button class="btn-success" id="upBtn">▶ Start</button>
       <button class="btn-danger" id="downBtn">⬛ Stop</button>
       <button class="btn-warning" id="restartBtn">🔄 Restart</button>
@@ -319,9 +317,12 @@
     <div class="status-section">
       <div class="status-header">
         <h2>Output</h2>
-        <button class="btn-secondary" id="clearBtn" style="padding: 6px 12px; font-size: 12px;">Clear</button>
+        <button class="btn-secondary" id="clearBtn">Clear</button>
       </div>
-      <div class="output-box" id="output">Ready. Select a directory containing docker-compose.yml to begin.</div>
+
+      <div class="output-box" id="output">
+Ready. Select a directory containing docker-compose.yml to begin.
+      </div>
     </div>
   </div>
 
