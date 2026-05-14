@@ -1,6 +1,6 @@
 {
   "name": "j1soft-services-launcher",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Desktop app to manage j1soft services",
   "main": "main.js",
   "scripts": {
